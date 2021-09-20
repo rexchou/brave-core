@@ -1,0 +1,25 @@
+diff --git a/chrome/browser/resources/optimize_webui.py b/chrome/browser/resources/optimize_webui.py
+index 30ffbf7f343b67c294a1ce1dce8cc34f915d6e3e..cd6da9f7febe5d608bfa330a932dfb74434c3dd8 100755
+--- a/chrome/browser/resources/optimize_webui.py
++++ b/chrome/browser/resources/optimize_webui.py
+@@ -56,8 +56,12 @@ _POLYMER_PATH = os.path.join(
+     '').replace('\\', '/')
+ 
+ 
++_BR_RESOURCES_PATH = os.path.join(_SRC_PATH, 'brave', 'ui', 'webui', 'resources','').replace('\\', '/')
++
+ # These files are already combined and minified.
+ _BASE_EXCLUDES = [
++  'chrome://brave-resources/fonts/muli.css',
++  'chrome://brave-resources/fonts/poppins.css'
+   # Excludes applying only to Polymer 2.
+   'chrome://resources/html/polymer.html',
+   'chrome://resources/polymer/v1_0/polymer/polymer.html',
+@@ -98,6 +102,7 @@ for (redirect_url, file_path) in [
+     ('resources/js/', _JS_RESOURCES_PATH),
+     ('resources/polymer/v1_0/', _POLYMER_PATH),
+     ('resources/images/', _IMAGES_RESOURCES_PATH),
++    ('brave-resources/', _BR_RESOURCES_PATH)
+ ]:
+   # Redirect both the chrome://resources form and the scheme-relative form.
+   _URL_MAPPINGS.append(('chrome://' + redirect_url, file_path))

@@ -1,0 +1,12 @@
+diff --git a/chrome/browser/resources/extensions/BUILD.gn b/chrome/browser/resources/extensions/BUILD.gn
+index 53ed19cc2b6a172b889876b427fd810c4313c3af..9c40464663a1a20656c931b5f2fe010cb2a15490 100644
+--- a/chrome/browser/resources/extensions/BUILD.gn
++++ b/chrome/browser/resources/extensions/BUILD.gn
+@@ -21,6 +21,7 @@ if (optimize_webui) {
+     deps = [
+       ":unpak",
+       "../../../../ui/webui/resources:modulize",
++      "//brave/browser/resources/extensions:unpak",
+     ]
+     excludes = [ "chrome://resources/js/cr.m.js" ]
+   }

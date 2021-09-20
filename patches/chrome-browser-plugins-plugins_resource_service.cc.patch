@@ -1,0 +1,13 @@
+diff --git a/chrome/browser/plugins/plugins_resource_service.cc b/chrome/browser/plugins/plugins_resource_service.cc
+index 1e063a0c1aab3160df11c58985235f3733ec4ffa..5ebce022220798a87c0c37c9f0b10796f9a1f4ae 100644
+--- a/chrome/browser/plugins/plugins_resource_service.cc
++++ b/chrome/browser/plugins/plugins_resource_service.cc
+@@ -54,7 +54,7 @@ const int kStartResourceFetchDelayMs = 60 * 1000;
+ const int kCacheUpdateDelayMs = 24 * 60 * 60 * 1000;
+ 
+ const char kPluginsServerUrl[] =
+-    "https://www.gstatic.com/chrome/config/plugins_3/";
++    "https://static1.brave.com/chrome/config/plugins_3/";
+ 
+ GURL GetPluginsServerURL() {
+   std::string filename;

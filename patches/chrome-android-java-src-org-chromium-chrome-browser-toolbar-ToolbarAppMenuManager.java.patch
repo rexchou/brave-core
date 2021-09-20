@@ -1,0 +1,18 @@
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarAppMenuManager.java b/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarAppMenuManager.java
+index cabff32bdae3e37a296d6ecf07c5b209b612de1d..a74dd961aebba355d913f521b898608d3e9153d1 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarAppMenuManager.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarAppMenuManager.java
+@@ -162,6 +162,7 @@ class ToolbarAppMenuManager implements AppMenuObserver {
+         mAppMenuHandler = appMenuHandler;
+         mAppMenuHandler.addObserver(this);
+         mAppMenuButtonHelper = mAppMenuHandler.createAppMenuButtonHelper();
++        mAppMenuButtonHelper.setMenuShowsFromBottom(mBottomToolbarEnabled);
+         mAppMenuButtonHelper.setOnAppMenuShownListener(() -> {
+             RecordUserAction.record("MobileToolbarShowMenu");
+             mToolbar.onMenuShown();
+@@ -203,4 +204,5 @@ class ToolbarAppMenuManager implements AppMenuObserver {
+             mToolbar.removeAppMenuUpdateBadge(false);
+         }
+     }
++    private boolean mBottomToolbarEnabled = false; public void setBottomMenu(boolean enabled) {mBottomToolbarEnabled = enabled;if (mAppMenuButtonHelper != null) mAppMenuButtonHelper.setMenuShowsFromBottom(enabled); }
+ }

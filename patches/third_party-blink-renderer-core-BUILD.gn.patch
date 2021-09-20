@@ -1,0 +1,20 @@
+diff --git a/third_party/blink/renderer/core/BUILD.gn b/third_party/blink/renderer/core/BUILD.gn
+index cdd49a53f8138572d746d87ba7116880eca850ef..b0a08622b460cb6d8791195d5469f6c4d5bd2b9b 100644
+--- a/third_party/blink/renderer/core/BUILD.gn
++++ b/third_party/blink/renderer/core/BUILD.gn
+@@ -147,6 +147,7 @@ component("core") {
+ 
+   visibility = []  # Allow re-assignment of list.
+   visibility = [ "//third_party/blink/*" ]
++  visibility += brave_blink_renderer_core_visibility
+ 
+   # If you create a new subdirectory, make a new BUILD file for that directory
+   # and reference it in the deps below rather than adding the sources here.
+@@ -217,6 +218,7 @@ component("core") {
+     "//url",
+     "//v8",
+   ]
++  public_deps += brave_blink_renderer_core_public_deps
+   deps = [
+     "//components/paint_preview/common",
+     "//third_party/blink/public/common",

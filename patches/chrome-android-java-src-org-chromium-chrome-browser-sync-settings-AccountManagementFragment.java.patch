@@ -1,0 +1,13 @@
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/sync/settings/AccountManagementFragment.java b/chrome/android/java/src/org/chromium/chrome/browser/sync/settings/AccountManagementFragment.java
+index c52d999eb607fa3ab2f21e6aff34e9baf11e1442..e749bb765f86f805b112b316c1f1b0522d96e449 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/sync/settings/AccountManagementFragment.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/sync/settings/AccountManagementFragment.java
+@@ -65,7 +65,7 @@ import java.util.List;
+  *
+  * Note: This can be triggered from a web page, e.g. a GAIA sign-in page.
+  */
+-public class AccountManagementFragment extends PreferenceFragmentCompat
++public class AccountManagementFragment extends org.chromium.chrome.browser.settings.BravePreferenceFragment
+         implements SignOutDialogListener, SignInStateObserver, ProfileDataCache.Observer {
+     private static final String TAG = "AcctManagementPref";
+ 

@@ -1,0 +1,13 @@
+diff --git a/chrome/browser/upgrade_detector/upgrade_detector_impl.cc b/chrome/browser/upgrade_detector/upgrade_detector_impl.cc
+index 02164a64493e52a9cfb60005d6b5906641030764..aef6b51eaacb91765a71a2e72d093bdd66562ee7 100644
+--- a/chrome/browser/upgrade_detector/upgrade_detector_impl.cc
++++ b/chrome/browser/upgrade_detector/upgrade_detector_impl.cc
+@@ -460,7 +460,7 @@ void UpgradeDetectorImpl::Init() {
+ 
+   // On Windows, only enable upgrade notifications for Google Chrome builds.
+   // Chromium does not use an auto-updater.
+-#if !defined(OS_WIN) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
++#if !defined(OS_WIN) || BUILDFLAG(GOOGLE_CHROME_BRANDING) || (defined(BRAVE_CHROMIUM_BUILD) && defined(OFFICIAL_BUILD))
+ 
+   // On macOS, only enable upgrade notifications if the updater (Keystone) is
+   // present.

@@ -1,0 +1,97 @@
+# Copyright (c) 2019 The Brave Authors. All rights reserved.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+import("//brave/build/config.gni")
+import("//brave/components/brave_rewards/browser/buildflags/buildflags.gni")
+import("//testing/test.gni")
+
+source_set("brave_rewards_unit_tests") {
+  testonly = true
+
+  # Remove when https://github.com/brave/brave-browser/issues/10615 is resolved
+  check_includes = false
+  if (brave_rewards_enabled) {
+    sources = [
+      "//brave/components/brave_rewards/browser/rewards_service_impl_unittest.cc",
+      "//brave/components/l10n/browser/locale_helper_mock.cc",
+      "//brave/components/l10n/browser/locale_helper_mock.h",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/legacy/bat_helper_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/legacy/bat_util_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/contribution/contribution_monthly_util_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/contribution/contribution_unblinded_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/credentials/credentials_util_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/database/database_activity_info_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/database/database_balance_report_info_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/database/database_mock.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/database/database_mock.h",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/database/database_publisher_prefix_list_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/database/database_util_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/ledger_client_mock.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/ledger_client_mock.h",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/ledger_impl_mock.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/ledger_impl_mock.h",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/legacy/client_state_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/legacy/publisher_settings_state_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/legacy/report_balance_state_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/legacy/wallet_info_state_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/logging/logging_util_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/media/github_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/media/helper_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/media/reddit_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/media/twitch_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/media/twitter_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/media/vimeo_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/media/youtube_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/promotion/promotion_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/publisher/prefix_list_reader_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/publisher/publisher_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/api/api_util_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/api/get_parameters/get_parameters_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/private_cdn/get_publisher/get_publisher_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/private_cdn/private_cdn_util_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/get_available/get_available_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/get_captcha/get_captcha_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/get_recover_wallet/get_recover_wallet_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/get_signed_creds/get_signed_creds_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/get_wallet_balance/get_wallet_balance_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/post_bat_loss/post_bat_loss_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/post_captcha/post_captcha_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/post_claim_uphold/post_claim_uphold_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/post_clobbered_claims/post_clobbered_claims_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/post_creds/post_creds_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/post_devicecheck/post_devicecheck_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/post_safetynet/post_safetynet_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/post_suggestions/post_suggestions_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/post_suggestions_claim/post_suggestions_claim_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/post_wallet_brave/post_wallet_brave_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/promotions_util_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/put_captcha/put_captcha_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/put_devicecheck/put_devicecheck_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/promotion/put_safetynet/put_safetynet_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/rewards/get_prefix_list/get_prefix_list_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/endpoint/rewards/rewards_util_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/uphold/uphold_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/uphold/uphold_util_unittest.cc",
+      "//brave/vendor/bat-native-ledger/src/bat/ledger/internal/wallet/wallet_util_unittest.cc",
+    ]
+
+    deps = [
+      "//brave/browser:browser_process",
+      "//brave/components/brave_rewards/browser:browser",
+      "//brave/components/brave_rewards/browser:testutil",
+      "//brave/components/brave_rewards/resources:static_resources_grit",
+      "//brave/components/challenge_bypass_ristretto",
+      "//brave/vendor/bat-native-ledger",
+      "//brave/vendor/bat-native-rapidjson",
+      "//chrome/browser:browser",
+      "//content/test:test_support",
+      "//net:net",
+      "//ui/base:base",
+      "//url:url",
+    ]
+
+    configs += [ "//brave/vendor/bat-native-ledger:internal_config" ]
+  }  # if (brave_rewards_enabled)
+}  # source_set("brave_rewards_unit_tests")

@@ -1,0 +1,25 @@
+diff --git a/content/browser/frame_host/navigation_controller_impl.cc b/content/browser/frame_host/navigation_controller_impl.cc
+index d6c77f00ee6fb5f0a21d2d3df2bc00aea3f7e5dc..aeffc0ad4e5839d164bdd188726d7bb8b13f5f6e 100644
+--- a/content/browser/frame_host/navigation_controller_impl.cc
++++ b/content/browser/frame_host/navigation_controller_impl.cc
+@@ -2974,16 +2974,17 @@ void NavigationControllerImpl::NavigateWithoutEntry(
+   // Note: we intentionally leave the pending entry in place for renderer debug
+   // URLs, unlike the cases below where we clear it if the navigation doesn't
+   // proceed.
+-  if (IsRendererDebugURL(params.url)) {
++  const GURL url = params.url.SchemeIs(url::kJavaScriptScheme) ? params.url : pending_entry_->GetURL();
++  if (IsRendererDebugURL(url)) {
+     // Renderer-debug URLs won't go through NavigationThrottlers so we have to
+     // check them explicitly. See bug 913334.
+     if (GetContentClient()->browser()->IsRendererDebugURLBlacklisted(
+-            params.url, browser_context_)) {
++            url, browser_context_)) {
+       DiscardPendingEntry(false);
+       return;
+     }
+ 
+-    HandleRendererDebugURL(node, params.url);
++    HandleRendererDebugURL(node, url);
+     return;
+   }
+ 

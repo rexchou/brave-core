@@ -1,0 +1,19 @@
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsCoordinator.java b/chrome/android/java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsCoordinator.java
+index dbe1439508218d563014b99910968b79520099d4..7cee920587e0965b4bf2b14656dfa122060486e8 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsCoordinator.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsCoordinator.java
+@@ -120,7 +120,7 @@ public class BottomControlsCoordinator {
+                     scrimCoordinator);
+         } else {
+             mBottomToolbarCoordinator =
+-                    new BottomToolbarCoordinator(root.findViewById(R.id.bottom_toolbar_stub),
++                    new BraveBottomToolbarCoordinator(root.findViewById(R.id.bottom_toolbar_stub), root,
+                             tabProvider, tabSwitcherLongclickListener, themeColorProvider,
+                             shareDelegateSupplier, showStartSurfaceCallable, openHomepageAction,
+                             setUrlBarFocusAction, overviewModeBehaviorSupplier);
+@@ -200,4 +200,5 @@ public class BottomControlsCoordinator {
+         if (mTabGroupUi != null) mTabGroupUi.destroy();
+         mMediator.destroy();
+     }
++    public void updateBookmarkButton(boolean isBookmarked, boolean editingAllowed) {if (mBottomToolbarCoordinator != null) { mBottomToolbarCoordinator.updateBookmarkButton(isBookmarked, editingAllowed);}}
+ }

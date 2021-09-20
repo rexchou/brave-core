@@ -1,0 +1,26 @@
+diff --git a/chrome/installer/util/BUILD.gn b/chrome/installer/util/BUILD.gn
+index 0b770ce37449aac014690c68d58b8f4e5d5f511b..6cf98e8c92b0ab448c8ee6ba20591880f1783069 100644
+--- a/chrome/installer/util/BUILD.gn
++++ b/chrome/installer/util/BUILD.gn
+@@ -222,7 +222,20 @@ generate_embedded_i18n("generate_strings") {
+ 
+   output_file_name_base = "installer_util_strings"
+ 
+-  branding = branding_path_component
++  brand = "$branding_path_component"
++  if (brave_chromium_build) {
++    # When brave_strings.grd is modified, outputs should be re-generated.
++    # This is workaround. Need to change the way of using |brave_strings.grd|
++    # in |create_string_rc.py|.
++    sources = [
++      "//chrome/app/brave_strings.grd"
++    ]
++    if (!is_official_build) {
++      # TODO(shong): Remove this.
++      brand = brand + "-development"
++    }
++  }
++  branding = brand
+ }
+ 
+ # Compile the generated .rc file.

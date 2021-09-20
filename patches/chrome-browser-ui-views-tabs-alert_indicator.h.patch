@@ -1,0 +1,12 @@
+diff --git a/chrome/browser/ui/views/tabs/alert_indicator.h b/chrome/browser/ui/views/tabs/alert_indicator.h
+index 57e3596024c96d4610853662041179b9cb145f3e..8ef8d7948958398be56fc2357be8e474bb72f47e 100644
+--- a/chrome/browser/ui/views/tabs/alert_indicator.h
++++ b/chrome/browser/ui/views/tabs/alert_indicator.h
+@@ -47,6 +47,7 @@ class AlertIndicator : public views::ImageView {
+   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
+ 
+  private:
++  friend class BraveAlertIndicator;
+   friend class AlertIndicatorTest;
+   friend class TabTest;
+   class FadeAnimationDelegate;

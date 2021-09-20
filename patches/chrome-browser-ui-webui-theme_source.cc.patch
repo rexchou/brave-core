@@ -1,0 +1,25 @@
+diff --git a/chrome/browser/ui/webui/theme_source.cc b/chrome/browser/ui/webui/theme_source.cc
+index c9539ab1bdb7ff6fabfbceec18b043bdacc5996d..182838a25711efab9cb7fbb4f6a214fb33f8ab1d 100644
+--- a/chrome/browser/ui/webui/theme_source.cc
++++ b/chrome/browser/ui/webui/theme_source.cc
+@@ -110,7 +110,7 @@ void ThemeSource::StartDataRequest(
+   int resource_id = -1;
+   if (parsed_path == "current-channel-logo") {
+     switch (chrome::GetChannel()) {
+-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
++#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || (defined(BRAVE_CHROMIUM_BUILD) && defined(OFFICIAL_BUILD))
+       case version_info::Channel::CANARY:
+         resource_id = IDR_PRODUCT_LOGO_32_CANARY;
+         break;
+@@ -132,7 +132,11 @@ void ThemeSource::StartDataRequest(
+         FALLTHROUGH;
+ #endif
+       case version_info::Channel::UNKNOWN:
++#if defined(BRAVE_CHROMIUM_BUILD)
++        resource_id = IDR_PRODUCT_LOGO_32_DEVELOPMENT;
++#else
+         resource_id = IDR_PRODUCT_LOGO_32;
++#endif
+         break;
+     }
+   } else {

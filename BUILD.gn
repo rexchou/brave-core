@@ -1,0 +1,539 @@
+import("//tools/grit/repack.gni")
+import("//build/config/zip.gni")
+import("//brave/build/config.gni")
+import("//ui/base/ui_features.gni")
+import("//third_party/icu/config.gni")
+import("//build/config/locales.gni")
+import("//build/util/process_version.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//media/cdm/library_cdm/cdm_paths.gni")
+import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
+import("//brave/components/brave_rewards/browser/buildflags/buildflags.gni")
+import("//brave/build/cargo.gni")
+
+if (!is_ios) {
+  import("//brave/brave_paks.gni")
+}
+
+if (is_mac) {
+  import("//build/config/mac/rules.gni")
+  import("//brave/build/mac/tweak_info_plist.gni")
+}
+
+if (is_linux) {
+  import("//brave/build/linux/channels.gni")
+}
+
+if (!is_ios) {
+  group("child_dependencies") {
+    deps = [
+      "//brave/renderer",
+      "//brave/utility",
+      "common"
+    ]
+  }
+
+  group("browser_dependencies") {
+    deps = [
+      "browser",
+      "chromium_src:browser",
+      "chromium_src/chrome/app",
+      "common",
+      "//components/omnibox/common",
+      "//services/device/public/cpp:device_features",
+    ]
+
+    data_deps = [
+      ":unpacked_resources",
+    ]
+
+    if (!is_ios) {
+      deps += [
+        ":packed_resources",
+      ]
+    }
+  }
+}
+
+if (is_win) {
+  # create_installer_archive.py assumes that last_chrome_installer folder has
+  # courgette.exe.
+  if (build_delta_installer) {
+    copy("copy_courgette_binary") {
+      visibility = [ ":mini_installer_dependencies" ]
+      sources = [ "$root_out_dir/courgette.exe" ]
+      outputs = [ "$root_out_dir/$last_chrome_installer/{{source_file_part}}" ]
+      deps = [
+        "//courgette",
+        "//courgette:copy_courgette_binaries",
+      ]
+    }
+  }
+
+  group("mini_installer_dependencies") {
+    deps = [ ":brave" ]
+
+    if (build_delta_installer) {
+      deps += [ ":copy_courgette_binary" ]
+    }
+  }
+}
+
+group("brave") {
+  deps = ["build/$target_os:brave"]
+  if (!is_android && !is_ios) {
+    deps += [
+      ":generate_version",
+      "//chrome"
+    ]
+  }
+}
+
+group("resources") {
+  public_deps = [
+    # TODO(bridiver)
+    # "//brave/browser:resources",
+    # "//brave/common:resources",
+    # "//brave/renderer:resources",
+    "//brave/components/resources",
+  ]
+
+  data_deps = [
+    "//brave/components/resources:about_credits"
+  ]
+}
+
+if (is_android) {
+  android_assets("brave_pak_assets") {
+    sources = [
+      "$root_build_dir/brave_resources.pak",
+      "$root_build_dir/brave_100_percent.pak",
+      "//brave/LICENSE.html",
+      "//brave/android/java/org/chromium/chrome/browser/onboarding/animations/onboarding_ads.json",
+      "//brave/android/java/org/chromium/chrome/browser/onboarding/animations/privacy_protection.json",
+      "//brave/android/java/org/chromium/chrome/browser/onboarding/animations/save_data_and_battery.json",
+      "//brave/android/java/org/chromium/chrome/browser/onboarding/animations/website_loads_faster.json",
+      "//brave/android/java/org/chromium/chrome/browser/onboarding/animations/onboarding_ads_notification.json",
+      "//brave/android/java/org/chromium/chrome/browser/onboarding/animations/onboarding_rewards.json",
+    ]
+    deps = [
+      "//brave:browser_dependencies",
+    ]
+    disable_compression = true
+  }
+}
+
+config("rust_link") {
+  # https://bugzilla.mozilla.org/show_bug.cgi?id=1188030#c14
+  if (!is_component_build) {
+    ldflags = [ "-Wl,-no_compact_unwind" ]
+  }
+}
+
+if (is_mac) {
+  group("framework_bundle_data") {
+    # this only seems to work correctly when applied to
+    # the chrome_framework target so we add it here
+    public_configs = [ ":rust_link" ]
+    deps = [
+      "components/brave_extension/extension/brave_extension:brave_extension_framework_bundle_data",
+    ]
+    if (brave_rewards_enabled) {
+      deps += [
+        "components/brave_rewards/resources/extension:framework_bundle_data",
+      ]
+    }
+  }
+}
+
+group("unpacked_resources") {
+  if (!is_mac) {
+    deps = []
+    if (enable_extensions) {
+      deps = [
+        "//brave/components/brave_extension/extension/brave_extension:locales",
+      ]
+      if (brave_rewards_enabled) {
+        deps += [
+          "//brave/components/brave_rewards/resources/extension:locales",
+        ]
+      }
+    }
+  }
+}
+
+#TODO(bridiver) - what to do
+if (!is_ios) {
+group("brave_tests") {
+  testonly = true
+
+  deps = [
+    "test:brave_unit_tests",
+  ]
+
+  if (!is_android) {
+    deps += [
+      "test:brave_browser_tests",
+    ]
+  }
+}
+}
+
+if (!is_ios) {
+  brave_paks("packed_resources") {
+    if (is_mac) {
+      output_dir = "$root_gen_dir/repack"
+      copy_data_to_bundle = true
+    } else {
+      output_dir = root_out_dir
+    }
+  }
+}
+
+branding_dir = "//chrome/app/theme/$branding_path_component"
+copy("theme_files") {
+  visibility = [ ":*" ]
+  sources = [
+    "$branding_dir/product_logo_128_beta.png",
+    "$branding_dir/product_logo_128_dev.png",
+    "$branding_dir/product_logo_128_development.png",
+    "$branding_dir/product_logo_128_nightly.png",
+  ]
+  outputs = [
+    "$root_out_dir/installer/theme/{{source_file_part}}",
+  ]
+}
+
+group("create_dist") {
+  deps = []
+  if (is_android) {
+    deps += [
+      "app/$target_os:create_dist_zips"
+    ]
+  } else {
+    deps += [
+      ":create_dist_zips"
+    ]
+  }
+  if (is_win) {
+    deps += [
+      "build/win:create_signed_installer"
+    ]
+
+    if (build_omaha) {
+      deps += [
+        "//brave/vendor/omaha",
+      ]
+    }
+  }
+  if (is_mac) {
+    if (skip_signing) {
+      deps += [
+        "build/mac:unsigned_dmg"
+      ]
+    } else {
+      deps += [
+        "build/mac:finalize_dmg_pkg"
+      ]
+    }
+  }
+  if (is_linux) {
+    deps += [
+      "//chrome/installer/linux:$linux_channel",
+      "//brave/app/linux:dist_resources",
+      ":theme_files",
+    ]
+  }
+}
+
+if (!is_mac && !is_android && !is_ios) {
+  copy("brave_locale_dist_resources") {
+    deps = [
+      "//chrome:packed_resources",
+    ]
+
+    sources = []
+    foreach(locale, locales) {
+      sources += [ "$root_out_dir/locales/$locale.pak" ]
+    }
+    outputs = [
+      "$brave_dist_dir/locales/{{source_file_part}}",
+    ]
+  }
+
+  if (enable_extensions) {
+    group("brave_extensions_locale_dist_resources") {
+      deps = [
+        "//brave/components/brave_extension/extension/brave_extension:locales",
+      ]
+      if (brave_rewards_enabled) {
+        deps += [
+          "//brave/components/brave_rewards/resources/extension:locales",
+        ]
+      }
+
+      public_deps = []
+      foreach(locale, locales) {
+        # public_deps is used intentionaly because ":create_dist_zip" needs the all dependency
+        # of all locale files.
+        public_deps += [":brave_shields_locales_${locale}"]
+        if (brave_rewards_enabled) {
+          public_deps += [":brave_rewards_locales_${locale}"]
+        }
+      }
+    }
+
+    foreach(locale, locales) {
+      if (brave_rewards_enabled) {
+        copy("brave_rewards_locales_${locale}") {
+          deps = [ "//brave/components/brave_rewards/resources/extension:locales_$locale" ]
+
+          locale = string_replace(locale, "-", "_")
+          sources = [ "$root_out_dir/resources/brave_rewards/_locales/$locale/messages.json" ]
+          outputs = [
+            "$brave_dist_dir/resources/brave_rewards/_locales/$locale/{{source_file_part}}",
+          ]
+        }
+      }
+      copy("brave_shields_locales_${locale}") {
+        deps = [ "//brave/components/brave_extension/extension/brave_extension:locales_$locale" ]
+
+        locale = string_replace(locale, "-", "_")
+        sources = [ "$root_out_dir/resources/brave_extension/_locales/$locale/messages.json" ]
+        outputs = [
+          "$brave_dist_dir/resources/brave_extension/_locales/$locale/{{source_file_part}}",
+        ]
+      }
+    }
+  }
+}
+
+copy("brave_license_dist_resources") {
+  sources = [
+    "//brave/LICENSE",
+  ]
+
+  outputs = [
+    "$brave_dist_dir/{{source_file_part}}"
+  ]
+}
+
+process_version("generate_version") {
+  template_file = "version.version"
+  extra_args = [ "-e", "BRAVE_BROWSER_VERSION=\"$brave_version\"" ]
+  output = "$root_out_dir/version"
+  process_only = true
+}
+
+if (!is_android && !is_ios) {
+  copy("brave_dist_resources") {
+    sources = [ "$root_out_dir/version" ]
+
+    deps = [
+      ":brave",
+      ":generate_version",
+      ":brave_license_dist_resources",
+      ":packed_resources",
+      "build/$target_os:brave",
+      "//chrome:packed_resources",
+      "//third_party/icu:icudata",
+    ]
+
+    if (!is_mac) {
+      sources += [
+        "$root_out_dir/brave_resources.pak",
+        "$root_out_dir/brave_100_percent.pak",
+        "$root_out_dir/brave_200_percent.pak",
+        "$root_out_dir/$brave_exe",
+        "$root_out_dir/chrome_100_percent.pak",
+        "$root_out_dir/chrome_200_percent.pak",
+        "$root_out_dir/icudtl.dat",
+        "$root_out_dir/resources.pak",
+      ]
+
+      if (v8_use_external_startup_data) {
+        deps += [ "//v8" ]
+
+        if (use_v8_context_snapshot) {
+          sources += [ "$root_out_dir/v8_context_snapshot.bin" ]
+          deps += [ "//tools/v8_context_snapshot" ]
+        } else {
+          sources += [ "$root_out_dir/snapshot_blob.bin" ]
+        }
+      }
+    }
+
+    outputs = [
+      "$brave_dist_dir/{{source_file_part}}"
+    ]
+  }
+}
+
+if (target_cpu == "x86") {
+  target_arch = "ia32"
+} else {
+  target_arch = target_cpu
+}
+
+action("create_symbols_dist") {
+  output = "$brave_dist_dir/$brave_project_name-v$brave_version-$brave_platform-$target_arch-symbols.zip"
+
+  script = "//brave/script/create-dist.py"
+
+  inputs = get_target_outputs(":brave_license_dist_resources")
+  dir_inputs = [ "$brave_project_name.breakpad.syms" ]
+
+  file_inputs = []
+  foreach(input, inputs) {
+    file_inputs += [ rebase_path(input, brave_dist_dir) ]
+  }
+
+  rebase_output = rebase_path(output)
+  rebase_base_dir = rebase_path(brave_dist_dir)
+
+  args = [
+    "--base-dir=$rebase_base_dir",
+    "--inputs=$file_inputs",
+    "--dir-inputs=$dir_inputs",
+    "--output=$rebase_output",
+  ]
+
+  outputs = [ output ]
+
+  deps = [
+    "app/$current_os:symbol_dist_resources",
+    ":brave_license_dist_resources",
+  ]
+}
+
+action("create_dist_zips") {
+  output = "$brave_dist_dir/$brave_project_name-v$brave_version-$brave_platform-$target_arch.zip"
+
+  script = "//brave/script/create-dist.py"
+
+  inputs = get_target_outputs(":brave_license_dist_resources")
+
+  if (!is_mac && !is_android && !is_ios) {
+    inputs += get_target_outputs(":brave_dist_resources")
+    inputs += get_target_outputs(":brave_locale_dist_resources")
+    if (enable_extensions) {
+      foreach(locale, locales) {
+        inputs += get_target_outputs(":brave_shields_locales_${locale}")
+        if (brave_rewards_enabled) {
+          inputs += get_target_outputs(":brave_rewards_locales_${locale}")
+        }
+      }
+    }
+  }
+
+  if (is_win) {
+    inputs += [
+      "$brave_dist_dir/chrome_elf.dll",
+    ]
+  }
+
+  file_inputs = []
+  foreach(input, inputs) {
+    file_inputs += [ rebase_path(input, brave_dist_dir) ]
+  }
+
+  dir_inputs = []
+  if (is_mac) {
+    dir_inputs += [
+      "$brave_exe",
+    ]
+  }
+
+  outputs = [
+    output
+  ]
+
+  deps = [
+    ":create_symbols_dist",
+    ":brave_license_dist_resources",
+    "app/$current_os:dist_resources",
+  ]
+
+  if (!is_mac && !is_android && !is_ios) {
+    deps += [
+      ":brave_dist_resources",
+      ":brave_locale_dist_resources",
+    ]
+
+    if (enable_extensions) {
+      deps += [
+        ":brave_extensions_locale_dist_resources",
+      ]
+    }
+  }
+
+  rebase_output = rebase_path(output)
+  if (is_mac) {
+    rebase_base_dir = rebase_path(root_out_dir)
+  } else {
+    rebase_base_dir = rebase_path(brave_dist_dir, root_out_dir)
+  }
+  args = [
+    "--base-dir=$rebase_base_dir",
+    "--inputs=$file_inputs",
+    "--dir-inputs=$dir_inputs",
+    "--output=$rebase_output",
+  ]
+}
+
+if (is_mac) {
+  group("brave_app") {
+    deps = [
+      ":brave_app_plist"
+    ]
+
+    if (enable_sparkle) {
+      deps += [ "//brave/vendor/sparkle:sparkle_resources_bundle_data" ]
+    }
+  }
+
+  brave_tweak_info_plist("brave_app_plist") {
+    info_plist = "$root_gen_dir/chrome/chrome_app_plist_tweaked.plist"
+
+    args = [
+      "--brave_channel=" + brave_channel,
+      "--brave_product_dir_name=" + brave_product_dir_name,
+      "--brave_feed_url=" + brave_feed_url,
+      "--brave_dsa_file=" + brave_dsa_file,
+      "--brave_version=" + brave_version,
+    ]
+
+    deps = [
+      "//chrome:chrome_app_plist",
+    ]
+  }
+
+  brave_tweak_info_plist("brave_helper_plist") {
+    info_plist = "$root_gen_dir/chrome/chrome_helper_plist_tweaked.plist"
+    args = [
+      "--brave_channel=" + brave_channel,
+      "--brave_product_dir_name=" + brave_product_dir_name,
+      "--brave_version=" + brave_version,
+    ]
+
+    deps = [
+      "//chrome:chrome_helper_plist"
+    ]
+  }
+}
+
+action("audit_deps") {
+  script = "//brave/script/audit_deps.py"
+
+  outputs = [ "$root_gen_dir/non-existent-audit_deps" ]
+
+  args = [
+    "--source_root=" + rebase_path("//brave"),
+    "--rustup_path=" + rustup_path,
+    "--cargo_path=" + rustup_path,
+  ]
+
+  if (defined(rustc_toolchain)) {
+    args += [ "--toolchain=$rustc_toolchain" ]
+  }
+}

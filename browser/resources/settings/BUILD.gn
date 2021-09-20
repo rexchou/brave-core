@@ -1,0 +1,101 @@
+# Copyright (c) 2020 The Brave Authors. All rights reserved.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# you can obtain one at http://mozilla.org/MPL/2.0/.
+
+import("//brave/browser/tor/buildflags/buildflags.gni")
+import("//brave/build/config.gni")
+import("//brave/components/brave_wayback_machine/buildflags/buildflags.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//chrome/browser/resources/optimize_webui.gni")
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/polymer.gni")
+
+grit("resources") {
+  source = "settings_resources.grd"
+
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+  ]
+
+  deps = [ ":web_modules" ]
+  defines = [
+    "is_release_channel=$is_release_channel",
+    "enable_tor=$enable_tor",
+    "enable_brave_wayback_machine=$enable_brave_wayback_machine",
+  ]
+
+  enable_input_discovery_for_gn_analyze = optimize_webui
+
+  outputs = [
+    "grit/brave_settings_resources.h",
+    "grit/brave_settings_resources_map.cc",
+    "grit/brave_settings_resources_map.h",
+    "brave_settings_resources.pak",
+  ]
+
+  output_dir = "$root_gen_dir/brave/browser/resources/settings"
+  resource_ids = "//brave/browser/resources/resource_ids"
+}
+
+if (optimize_webui) {
+  group("unpak") {
+    deps = [
+      ":unpak_brave_settings_resources",
+    ]
+  }
+
+  action("unpak_brave_settings_resources") {
+    script = "//chrome/browser/resources/unpack_pak.py"
+
+    pak_file = "brave_settings_resources.pak"
+    out_folder = "$root_gen_dir/chrome/browser/resources/settings/settings_resources.unpak"
+
+    inputs = [
+      "$target_gen_dir/brave_settings_resources.pak",
+    ]
+
+    outputs = [
+      "${out_folder}/brave_unpack.stamp",
+    ]
+
+    deps = [
+      ":resources",
+    ]
+
+    args = [
+      "--out_folder",
+      rebase_path(out_folder, root_build_dir),
+      "--pak_file",
+      rebase_path("$target_gen_dir/${pak_file}", root_build_dir),
+    ]
+  }
+}
+
+group("web_modules") {
+  public_deps = [
+    # Sub-folder targets
+    "brave_appearance_page:web_modules",
+    "brave_clear_browsing_data_dialog:web_modules",
+    "brave_default_extensions_page:web_modules",
+    "brave_help_tips_page:web_modules",
+    "brave_new_tab_page:web_modules",
+    "brave_privacy_page:web_modules",
+    "brave_sync_page:web_modules",
+    "default_brave_shields_page:web_modules",
+    "getting_started_page:web_modules",
+    "social_blocking_page:web_modules",
+    # local targets
+    ":icons_module",
+  ]
+}
+
+polymer_modulizer("icons") {
+  js_file = "brave_icons.m.js"
+  html_file = "brave_icons.html"
+  html_type = "iron-iconset"
+}

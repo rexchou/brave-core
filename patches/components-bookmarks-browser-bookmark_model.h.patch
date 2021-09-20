@@ -1,0 +1,12 @@
+diff --git a/components/bookmarks/browser/bookmark_model.h b/components/bookmarks/browser/bookmark_model.h
+index a961929b1065d67727df65ebbc69d50eac5af5bd..9ba1f3ca2fe7cffd58daab65e620769c954c59dd 100644
+--- a/components/bookmarks/browser/bookmark_model.h
++++ b/components/bookmarks/browser/bookmark_model.h
+@@ -313,6 +313,7 @@ class BookmarkModel : public BookmarkUndoProvider,
+     return weak_factory_.GetWeakPtr();
+   }
+ 
++  BRAVE_BOOKMARK_MODEL_H
+  private:
+   friend class BookmarkCodecTest;
+   friend class BookmarkModelFaviconTest;

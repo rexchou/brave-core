@@ -1,0 +1,12 @@
+diff --git a/chrome/browser/ui/startup/startup_browser_creator_impl.cc b/chrome/browser/ui/startup/startup_browser_creator_impl.cc
+index 14369374b1e83de49ee0e858b3fe95a87ff144c5..ca5cafedc28e6754ab1bc5c1b781eee21037b804 100644
+--- a/chrome/browser/ui/startup/startup_browser_creator_impl.cc
++++ b/chrome/browser/ui/startup/startup_browser_creator_impl.cc
+@@ -665,6 +665,7 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
+   welcome_enabled =
+       welcome::IsEnabled(profile_) && welcome::HasModulesToShow(profile_);
+ #endif  // !defined(OS_CHROMEOS)
++  BRAVE_STARTUPBROWSERCREATORIMPL_DETERMINEURLSANDLAUNCH
+ 
+   bool serve_extensions_page =
+       extensions::ShouldShowExtensionsCheckupOnStartup(profile_);

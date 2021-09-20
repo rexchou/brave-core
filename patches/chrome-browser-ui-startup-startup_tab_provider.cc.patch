@@ -1,0 +1,16 @@
+diff --git a/chrome/browser/ui/startup/startup_tab_provider.cc b/chrome/browser/ui/startup/startup_tab_provider.cc
+index 3e5b36df42984e97161011c1d6696edc2e9667d0..dd9e3350acd0841c49784b77669e39ac05388281 100644
+--- a/chrome/browser/ui/startup/startup_tab_provider.cc
++++ b/chrome/browser/ui/startup/startup_tab_provider.cc
+@@ -143,7 +143,11 @@ StartupTabs StartupTabProviderImpl::GetExtensionCheckupTabs(
+ bool StartupTabProviderImpl::CanShowWelcome(bool is_signin_allowed,
+                                             bool is_supervised_user,
+                                             bool is_force_signin_enabled) {
++#if defined(BRAVE_CHROMIUM_BUILD)
++  return true;
++#else
+   return is_signin_allowed && !is_supervised_user && !is_force_signin_enabled;
++#endif
+ }
+ 
+ // static

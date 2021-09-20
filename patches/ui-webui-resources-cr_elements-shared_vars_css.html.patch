@@ -1,0 +1,12 @@
+diff --git a/ui/webui/resources/cr_elements/shared_vars_css.html b/ui/webui/resources/cr_elements/shared_vars_css.html
+index 4f4c0b03cbdfea59a146139b019fdc44116ecace..99e9d42c6cc05b1105701bf3446827ea82588e32 100644
+--- a/ui/webui/resources/cr_elements/shared_vars_css.html
++++ b/ui/webui/resources/cr_elements/shared_vars_css.html
+@@ -1,6 +1,7 @@
+ <link rel="import" href="../html/polymer.html">
+ 
+ <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
++<link rel="import" href="chrome://brave-resources/br_elements/shared_vars_css.html">
+ 
+ <!-- Common css variables for Material Design WebUI. -->
+ <custom-style>

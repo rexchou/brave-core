@@ -1,0 +1,12 @@
+diff --git a/chrome/browser/resources/optimize_webui.gni b/chrome/browser/resources/optimize_webui.gni
+index 01db4694669c4449a1cbd0fa86d096a57b33fb0d..5da4a7c56ee13e861d7773230b44b4a5d63ba769 100644
+--- a/chrome/browser/resources/optimize_webui.gni
++++ b/chrome/browser/resources/optimize_webui.gni
+@@ -45,6 +45,7 @@ template("optimize_webui") {
+     }
+ 
+     deps = invoker.deps
++    deps += [ "//brave/ui/webui/resources:modulize", ]
+ 
+     # Note that we have to manually pass the sources to our script if the
+     # script needs them as inputs.

@@ -1,0 +1,13 @@
+diff --git a/chrome/browser/ui/views/extensions/extension_popup.cc b/chrome/browser/ui/views/extensions/extension_popup.cc
+index 0d3fa1ef607a87096e7d45b206c1d35c7062cebe..6e37c459d70bd42a0bb6d5b0c7736600f7bc2112 100644
+--- a/chrome/browser/ui/views/extensions/extension_popup.cc
++++ b/chrome/browser/ui/views/extensions/extension_popup.cc
+@@ -67,7 +67,7 @@ gfx::Size ExtensionPopup::CalculatePreferredSize() const {
+ 
+ void ExtensionPopup::AddedToWidget() {
+   BubbleDialogDelegateView::AddedToWidget();
+-  const int radius = GetBubbleFrameView()->corner_radius();
++  BRAVE_ADDED_TO_WIDGET
+   const bool contents_has_rounded_corners =
+       extension_view_->holder()->SetCornerRadius(radius);
+   SetBorder(views::CreateEmptyBorder(

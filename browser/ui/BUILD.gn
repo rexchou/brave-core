@@ -1,0 +1,367 @@
+import("//brave/browser/translate/buildflags/buildflags.gni")
+import("//brave/build/config.gni")
+import("//brave/components/brave_rewards/browser/buildflags/buildflags.gni")
+import("//brave/components/brave_wallet/browser/buildflags/buildflags.gni")
+import("//brave/components/brave_wayback_machine/buildflags/buildflags.gni")
+import("//brave/components/speedreader/buildflags.gni")
+import("//build/config/features.gni")
+import("//components/gcm_driver/config.gni")
+import("//chrome/common/features.gni")
+
+source_set("favicon_source") {
+  # Remove when https://github.com/brave/brave-browser/issues/10614 is resolved
+  check_includes = false
+  sources = [
+    "//chrome/browser/ui/webui/favicon_source.cc",
+    "//chrome/browser/ui/webui/favicon_source.h",
+  ]
+
+  deps = [
+    "//components/favicon/core",
+    "//components/favicon_base",
+    "//components/history/core/browser",
+    "//net",
+    "//ui/native_theme",
+    "//url",
+  ]
+}
+
+source_set("ui") {
+  # Remove when https://github.com/brave/brave-browser/issues/10614 is resolved
+  check_includes = false
+  sources = [
+    "webui/basic_ui.cc",
+    "webui/basic_ui.h",
+    "webui/brave_adblock_ui.cc",
+    "webui/brave_adblock_ui.h",
+    "webui/webcompat_reporter_ui.cc",
+    "webui/webcompat_reporter_ui.h",
+    "webui/brave_web_ui_controller_factory.cc",
+    "webui/brave_web_ui_controller_factory.h",
+    "webui/brave_webui_source.cc",
+    "webui/brave_webui_source.h",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "brave_browser_command_controller.cc",
+      "brave_browser_command_controller.h",
+      "brave_browser_content_setting_bubble_model_delegate.cc",
+      "brave_browser_content_setting_bubble_model_delegate.h",
+      "brave_layout_constants.cc",
+      "brave_layout_constants.h",
+      "brave_pages.cc",
+      "brave_pages.h",
+      "brave_view_ids.h",
+      "browser_commands.cc",
+      "browser_commands.h",
+      "content_settings/brave_autoplay_blocked_image_model.cc",
+      "content_settings/brave_autoplay_blocked_image_model.h",
+      "content_settings/brave_autoplay_content_setting_bubble_model.cc",
+      "content_settings/brave_autoplay_content_setting_bubble_model.h",
+      "content_settings/brave_content_setting_bubble_model.cc",
+      "content_settings/brave_content_setting_bubble_model.h",
+      "content_settings/brave_content_setting_image_models.cc",
+      "content_settings/brave_content_setting_image_models.h",
+      "omnibox/brave_omnibox_client_impl.cc",
+      "omnibox/brave_omnibox_client_impl.h",
+      "tabs/brave_tab_menu_model.cc",
+      "tabs/brave_tab_menu_model.h",
+      "toolbar/brave_app_menu_model.cc",
+      "toolbar/brave_app_menu_model.h",
+      "webui/brave_new_tab_message_handler.cc",
+      "webui/brave_new_tab_message_handler.h",
+      "webui/brave_new_tab_ui.cc",
+      "webui/brave_new_tab_ui.h",
+      "webui/brave_settings_ui.cc",
+      "webui/brave_settings_ui.h",
+      "webui/navigation_bar_data_provider.cc",
+      "webui/navigation_bar_data_provider.h",
+      "webui/brave_welcome_ui.cc",
+      "webui/brave_welcome_ui.h",
+      "webui/settings/brave_appearance_handler.cc",
+      "webui/settings/brave_appearance_handler.h",
+      "webui/settings/brave_import_data_handler.h",
+      "webui/settings/brave_privacy_handler.cc",
+      "webui/settings/brave_privacy_handler.h",
+      "webui/settings/brave_sync_handler.cc",
+      "webui/settings/brave_sync_handler.h",
+      "webui/settings/default_brave_shields_handler.cc",
+      "webui/settings/default_brave_shields_handler.h",
+    ]
+
+    if (is_mac) {
+      sources += [
+        "webui/settings/brave_import_data_handler_mac.mm",
+      ]
+    } else {
+      sources += [
+        "webui/settings/brave_import_data_handler.cc",
+      ]
+    }
+
+    if (enable_sparkle) {
+      sources += [
+        "webui/settings/brave_relaunch_handler_mac.h",
+        "webui/settings/brave_relaunch_handler_mac.mm",
+      ]
+    }
+  }
+
+  if (toolkit_views) {
+    sources += [
+      "views/bookmarks/bookmark_bar_instructions_view.cc",
+      "views/bookmarks/bookmark_bar_instructions_view.h",
+      "views/brave_layout_provider.cc",
+      "views/brave_layout_provider.h",
+      "views/download/brave_download_item_view.cc",
+      "views/download/brave_download_item_view.h",
+      "views/frame/brave_browser_view.cc",
+      "views/frame/brave_browser_view.h",
+      "views/reader_mode/brave_reader_mode_icon_view.cc",
+      "views/reader_mode/brave_reader_mode_icon_view.h",
+      "views/rounded_separator.cc",
+      "views/rounded_separator.h",
+      "views/tabs/brave_browser_tab_strip_controller.cc",
+      "views/tabs/brave_browser_tab_strip_controller.h",
+      "views/tabs/brave_tab_close_button.cc",
+      "views/tabs/brave_tab_close_button.h",
+      "views/tabs/brave_tab_context_menu_contents.cc",
+      "views/tabs/brave_tab_context_menu_contents.h",
+      "views/toolbar/bookmark_button.cc",
+      "views/toolbar/bookmark_button.h",
+    ]
+
+    if (enable_sparkle) {
+      sources += [
+        "views/update_recommended_message_box_mac.h",
+        "views/update_recommended_message_box_mac.mm",
+      ]
+    }
+
+    if (enable_brave_translate_extension) {
+      sources += [
+        "views/translate/brave_translate_bubble_view.cc",
+        "views/translate/brave_translate_bubble_view.h",
+        "views/translate/brave_translate_icon_view.cc",
+        "views/translate/brave_translate_icon_view.h",
+      ]
+    }
+  }
+
+  if (is_win || is_mac || is_desktop_linux) {
+    sources += [
+      "views/profiles/brave_incognito_menu_view.cc",
+      "views/profiles/brave_incognito_menu_view.h",
+      "views/profiles/brave_profile_menu_view.cc",
+      "views/profiles/brave_profile_menu_view.h",
+    ]
+  }
+
+  if (is_win || is_mac) {
+    sources += [
+      "views/frame/brave_browser_frame.cc",
+      "views/frame/brave_browser_frame.h",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "views/brave_views_delegate_linux.cc",
+      "views/brave_views_delegate_linux.h",
+    ]
+  }
+
+  deps = [
+    "//base",
+    "//brave/app:command_ids",
+    "//brave/app/theme:brave_theme_resources",
+    "//brave/app/theme:brave_unscaled_resources",
+    "//brave/app/vector_icons:vector_icons",
+    "//brave/browser:sparkle_buildflags",
+    "//brave/browser/devtools",
+    "//brave/browser/gcm_driver",
+    "//brave/browser/profiles",
+    "//brave/browser/tor",
+    # //chrome/browser/ui depends on //brave/browser/ui, add this target here
+    # to pull in dependencies needed for the overwrite codes in chromium_src.
+    "//brave/chromium_src/chrome/browser/ui",
+    "//brave/common",
+    "//brave/common:pref_names",
+    "//brave/common/tor:pref_names",
+    "//brave/components/brave_adblock_ui:generated_resources",
+    "//brave/components/webcompat_reporter/ui:generated_resources",
+    "//brave/components/brave_ads/browser",
+    "//brave/components/brave_rewards/browser",
+    "//brave/components/brave_rewards/resources",
+    "//brave/components/brave_shields/browser",
+    "//brave/components/brave_wallet/browser/buildflags:buildflags",
+    "//brave/components/brave_wayback_machine:buildflags",
+    "//brave/components/l10n/browser",
+    "//brave/components/l10n/common",
+    "//brave/components/ntp_background_images/browser",
+    "//brave/components/ntp_background_images/common",
+    "//brave/components/p3a:buildflags",
+    "//brave/components/vector_icons",
+    "//brave/components/webcompat_reporter/browser",
+    "//brave/components/weekly_storage",
+    "//chrome/app:command_ids",
+    "//chrome/app/vector_icons:vector_icons",
+    "//chrome/common",
+    "//chrome/services/qrcode_generator",
+    "//components/gcm_driver:gcm_buildflags",
+    "//components/prefs",
+    "//components/sessions",
+    "//content/public/browser",
+    "//content/public/common",
+    "//services/network/public/cpp",
+    "//skia",
+    "//ui/accessibility",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/resources",
+    "//url",
+  ]
+
+  # This is no longer compiled into Chromium on Android, but we still
+  # need it
+  if (is_android) {
+    deps += [
+      ":favicon_source",
+    ]
+  }
+
+  if (enable_brave_wayback_machine) {
+    deps += [ "//brave/components/brave_wayback_machine" ]
+
+    if (toolkit_views) {
+      deps += [ "//brave/browser/ui/views/infobars:brave_wayback_machine" ]
+    }
+  }
+
+  if (!is_android) {
+    deps += [
+      "//brave/app:brave_generated_resources_grit",
+      "//brave/browser:version_info",
+      "//brave/browser/resources/settings:resources",
+      "//brave/browser/ui/bookmark",
+      "//brave/components/brave_sync",
+      "//brave/components/brave_new_tab_ui:generated_resources",
+      "//brave/components/brave_welcome_ui:generated_resources",
+      "//components/sync_device_info",
+      "//third_party/blink/public/common",
+    ]
+  }
+
+  if (enable_extensions && toolkit_views) {
+    sources += [
+      "brave_actions/brave_action_icon_with_badge_image_source.cc",
+      "brave_actions/brave_action_icon_with_badge_image_source.h",
+      "brave_actions/brave_action_view_controller.cc",
+      "brave_actions/brave_action_view_controller.h",
+      "toolbar/brave_location_bar_model_delegate.cc",
+      "toolbar/brave_location_bar_model_delegate.h",
+      "toolbar/brave_toolbar_actions_model.cc",
+      "toolbar/brave_toolbar_actions_model.h",
+      "views/brave_actions/brave_action_view.cc",
+      "views/brave_actions/brave_action_view.h",
+      "views/brave_actions/brave_actions_container.cc",
+      "views/brave_actions/brave_actions_container.h",
+      "views/location_bar/brave_location_bar_view.cc",
+      "views/location_bar/brave_location_bar_view.h",
+      "views/location_bar/brave_star_view.cc",
+      "views/location_bar/brave_star_view.h",
+      "views/profiles/brave_avatar_toolbar_button.cc",
+      "views/profiles/brave_avatar_toolbar_button.h",
+      "views/tabs/brave_alert_indicator.cc",
+      "views/tabs/brave_alert_indicator.h",
+      "views/tabs/brave_new_tab_button.cc",
+      "views/tabs/brave_new_tab_button.h",
+      "views/toolbar/brave_toolbar_view.cc",
+      "views/toolbar/brave_toolbar_view.h",
+    ]
+
+    if (enable_extensions) {
+      sources += [
+        "webui/settings/brave_default_extensions_handler.cc",
+        "webui/settings/brave_default_extensions_handler.h",
+      ]
+    }
+
+    if (brave_rewards_enabled) {
+      sources += [
+        "views/brave_actions/brave_rewards_action_stub_view.cc",
+        "views/brave_actions/brave_rewards_action_stub_view.h",
+      ]
+    }
+
+    deps += [
+      "//brave/browser/resources/extensions:resources",
+      "//brave/components/brave_extension:generated_resources",
+      "//brave/components/brave_extension:static_resources",
+      "//brave/browser/extensions",
+      "//chrome/browser/extensions",
+      "//components/sessions",
+      "//extensions/browser",
+    ]
+  }
+
+  if (is_win && is_official_build) {
+    sources += [
+      "//chrome/browser/ui/webui/help/version_updater_win.cc",
+      "//chrome/browser/ui/webui/help/version_updater_win.h",
+    ]
+    deps += [ "//google_update" ]
+  }
+
+  if (brave_rewards_enabled) {
+    sources += [
+      "webui/brave_rewards_internals_ui.cc",
+      "webui/brave_rewards_internals_ui.h",
+      "webui/brave_rewards_source.cc",
+      "webui/brave_rewards_source.h",
+      "webui/brave_rewards_page_ui.cc",
+      "webui/brave_rewards_page_ui.h",
+    ]
+
+    if (!is_android) {
+      sources += [
+        "webui/brave_tip_ui.cc",
+        "webui/brave_tip_ui.h",
+      ]
+    }
+
+    deps += [
+      "//brave/components/brave_rewards/resources:page_generated_resources",
+      "//brave/components/brave_rewards/resources:internals_generated_resources",
+      "//brave/components/brave_rewards/resources:tip_generated_resources",
+    ]
+  }
+
+  if (brave_wallet_enabled) {
+    sources += [
+      "webui/brave_wallet_ui.cc",
+      "webui/brave_wallet_ui.h",
+    ]
+    deps += [ "//brave/components/brave_wallet_ui:generated_resources" ]
+  }
+
+  if (toolkit_views) {
+    deps += [ "//ui/views" ]
+
+    if (enable_brave_translate_extension) {
+      deps += [ "//components/translate/core/browser" ]
+    }
+
+    if (enable_speedreader) {
+      sources += [
+        "views/toolbar/speedreader_button.cc",
+        "views/toolbar/speedreader_button.h",
+      ]
+      deps += [
+        "//brave/components/speedreader",
+        "//brave/components/speedreader:buildflags",
+      ]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+diff --git a/components/content_settings/core/common/content_settings.h b/components/content_settings/core/common/content_settings.h
+index dd1198aa98bd24ae0431809e6cf47794033f61ed..521af70f1baec49a9f32befc05552c294cb95aed 100644
+--- a/components/content_settings/core/common/content_settings.h
++++ b/components/content_settings/core/common/content_settings.h
+@@ -79,6 +79,7 @@ struct RendererContentSettingRules {
+   ContentSettingsForOneType client_hints_rules;
+   ContentSettingsForOneType popup_redirect_rules;
+   ContentSettingsForOneType mixed_content_rules;
++  BRAVE_CONTENT_SETTINGS_H
+ };
+ 
+ namespace content_settings {

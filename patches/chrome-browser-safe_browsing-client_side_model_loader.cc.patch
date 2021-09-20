@@ -1,0 +1,13 @@
+diff --git a/chrome/browser/safe_browsing/client_side_model_loader.cc b/chrome/browser/safe_browsing/client_side_model_loader.cc
+index 0c740b727f212bc0551f0b67ea9d417d413f50da..8264cd8d4ebdfaa9f7ae8794180a996ccaab15a8 100644
+--- a/chrome/browser/safe_browsing/client_side_model_loader.cc
++++ b/chrome/browser/safe_browsing/client_side_model_loader.cc
+@@ -58,7 +58,7 @@ std::string ReadFileIntoString(base::FilePath path) {
+ const size_t ModelLoader::kMaxModelSizeBytes = 150 * 1024;
+ const int ModelLoader::kClientModelFetchIntervalMs = 3600 * 1000;
+ const char ModelLoader::kClientModelUrlPrefix[] =
+-    "https://ssl.gstatic.com/safebrowsing/csd/";
++    "https://static.brave.com/safebrowsing/csd/";
+ const char ModelLoader::kClientModelNamePattern[] =
+     "client_model_v5%s_variation_%d.pb";
+ const char ModelLoader::kClientModelFinchExperiment[] =

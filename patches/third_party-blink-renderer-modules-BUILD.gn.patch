@@ -1,0 +1,20 @@
+diff --git a/third_party/blink/renderer/modules/BUILD.gn b/third_party/blink/renderer/modules/BUILD.gn
+index 0f08d60394f526b883a91c3994bea5dbe6a7d3e8..9b8d0faa05d033aff8c79a578638e2329883d036 100644
+--- a/third_party/blink/renderer/modules/BUILD.gn
++++ b/third_party/blink/renderer/modules/BUILD.gn
+@@ -16,6 +16,7 @@ if (is_android) {
+ }
+ 
+ visibility = [ "//third_party/blink/renderer/*" ]
++visibility += brave_blink_renderer_modules_visibility
+ 
+ config("modules_implementation") {
+   defines = [ "BLINK_MODULES_IMPLEMENTATION=1" ]
+@@ -160,6 +161,7 @@ jumbo_component("modules") {
+     "//third_party/blink/renderer/modules/xr",
+   ]
+ 
++  sub_modules += brave_blink_sub_modules
+   if (is_android) {
+     sub_modules += [ "//third_party/blink/renderer/modules/remote_objects" ]
+   }

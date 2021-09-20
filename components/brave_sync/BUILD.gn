@@ -1,0 +1,85 @@
+import("//brave/components/common/typescript.gni")
+import("//build/config/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/repack.gni")
+import("buildflags/buildflags.gni")
+
+declare_args() {
+  brave_sync_endpoint = "https://sync.brave.com"
+}
+
+config("brave_sync_config") {
+  defines = [
+    "BRAVE_SYNC_ENDPOINT=\"$brave_sync_endpoint\""
+  ]
+}
+
+source_set("crypto") {
+  sources = [
+    "crypto/crypto.cc",
+    "crypto/crypto.h",
+  ]
+
+  deps = [
+    "//base",
+    "//brave/vendor/bat-native-tweetnacl:tweetnacl",
+    "//brave/vendor/bip39wally-core-native:bip39wally-core",
+    "//crypto",
+    "//third_party/boringssl",
+  ]
+
+  if (is_android) {
+    deps += [ "//third_party/android_sdk:cpu_features" ]
+  }
+}
+
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [
+    "//base",
+    "buildflags",
+  ]
+}
+
+source_set("network_time_helper") {
+  # Remove when https://github.com/brave/brave-browser/issues/10650 is resolved
+  check_includes = false
+  sources = [
+    "network_time_helper.cc",
+    "network_time_helper.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/network_time",
+  ]
+}
+
+source_set("prefs") {
+  sources = [
+    "brave_sync_prefs.cc",
+    "brave_sync_prefs.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/os_crypt",
+    "//components/prefs",
+    "//components/pref_registry",
+  ]
+}
+
+group("brave_sync") {
+  deps = [
+    ":crypto",
+    ":features",
+    ":network_time_helper",
+    ":prefs",
+    "buildflags",
+    "//base",
+  ]
+}

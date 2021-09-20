@@ -1,0 +1,27 @@
+diff --git a/chrome/browser/ui/views/tabs/new_tab_button.h b/chrome/browser/ui/views/tabs/new_tab_button.h
+index be79ae1321eda962e8370c074a7c9961da84600d..47d52bdf0a9f9c3533c227f4aa2f67dfdd115181 100644
+--- a/chrome/browser/ui/views/tabs/new_tab_button.h
++++ b/chrome/browser/ui/views/tabs/new_tab_button.h
+@@ -69,6 +69,7 @@ class NewTabButton : public views::ImageButton,
+   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+ 
+  private:
++  friend class BraveNewTabButton;
+   class HighlightPathGenerator;
+ 
+ // views::ImageButton:
+@@ -93,12 +94,14 @@ class NewTabButton : public views::ImageButton,
+   void PaintFill(gfx::Canvas* canvas) const;
+ 
+   // Paints a properly sized plus (+) icon into the center of the button.
++  virtual
+   void PaintPlusIcon(gfx::Canvas* canvas) const;
+ 
+   SkColor GetButtonFillColor() const;
+ 
+   // Returns the path for the given |origin| and |scale|.  If |extend_to_top| is
+   // true, the path is extended vertically to y = 0.
++  virtual
+   SkPath GetBorderPath(const gfx::Point& origin,
+                        float scale,
+                        bool extend_to_top) const;
